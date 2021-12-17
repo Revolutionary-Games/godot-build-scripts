@@ -20,9 +20,14 @@ export MONO_PREFIX_X86_64="/root/mono-installs/desktop-linux-x86_64-release"
 export MONO_PREFIX_X86="/root/mono-installs/desktop-linux-x86-release"
 export TERM=xterm
 export EDITOR_FLAGS=""
+export PRODUCTION_TEMPLATE_FLAGS=""
 
 if [ "${GPROF}" == "1" ]; then
     export EDITOR_FLAGS="${EDITOR_FLAGS} CCFLAGS=-pg CFLAGS=-pg CXXFLAGS=-pg LINKFLAGS=-pg"
+fi
+
+if [ "${BREAKPAD}" == "1" ]; then
+    export PRODUCTION_TEMPLATE_FLAGS="${PRODUCTION_TEMPLATE_FLAGS} breakpad_enabled=true"
 fi
 
 rm -rf godot
@@ -80,7 +85,7 @@ if [ "${MONO}" == "1" ]; then
   rm -rf bin
 
   $SCONS platform=x11 $OPTIONS_MONO_PREFIX tools=no target=release_debug
-  $SCONS platform=x11 $OPTIONS_MONO_PREFIX tools=no target=release
+  $SCONS platform=x11 $OPTIONS_MONO_PREFIX tools=no target=release $PRODUCTION_TEMPLATE_FLAGS
   mkdir -p /root/out/x64/templates-mono
   cp -rvp bin/* /root/out/x64/templates-mono
   rm -rf bin
@@ -88,13 +93,13 @@ if [ "${MONO}" == "1" ]; then
   export PATH="${GODOT_SDK_LINUX_X86}/bin:${BASE_PATH}"
   export OPTIONS_MONO_PREFIX="${OPTIONS} ${OPTIONS_MONO} mono_prefix=${MONO_PREFIX_X86}"
 
-  $SCONS platform=x11 $OPTIONS_MONO_PREFIX tools=yes target=release_debug copy_mono_root=yes bits=32
+  $SCONS platform=x11 $OPTIONS_MONO_PREFIX tools=yes target=release_debug copy_mono_root=yes bits=32 $EDITOR_FLAGS
   mkdir -p /root/out/x86/tools-mono
   cp -rvp bin/* /root/out/x86/tools-mono
   rm -rf bin
 
   $SCONS platform=x11 $OPTIONS_MONO_PREFIX tools=no target=release_debug bits=32
-  $SCONS platform=x11 $OPTIONS_MONO_PREFIX tools=no target=release bits=32
+  $SCONS platform=x11 $OPTIONS_MONO_PREFIX tools=no target=release bits=32 $PRODUCTION_TEMPLATE_FLAGS
   mkdir -p /root/out/x86/templates-mono
   cp -rvp bin/* /root/out/x86/templates-mono
   rm -rf bin
