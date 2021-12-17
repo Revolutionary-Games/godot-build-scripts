@@ -4,12 +4,26 @@ set -e
 
 # Config
 
-export SCONS="scons -j${NUM_CORES} verbose=yes warnings=no progress=no"
+if [ "${BREAKPAD}" == "1" ] || [ "${GPROF}" == "1" ]; then
+    export DEBUG_SYMBOLS=1
+fi
+
+if [ "${DEBUG_SYMBOLS}" == "1" ]; then
+  export SCONS="scons -j${NUM_CORES} verbose=yes warnings=no progress=no debug_symbols=yes separate_debug_symbols=no use_lto=yes use_static_cpp=yes"
+else
+  export SCONS="scons -j${NUM_CORES} verbose=yes warnings=no progress=no"
+fi
+
 export OPTIONS="production=yes"
 export OPTIONS_MONO="module_mono_enabled=yes mono_static=yes"
 export MONO_PREFIX_X86_64="/root/mono-installs/desktop-linux-x86_64-release"
 export MONO_PREFIX_X86="/root/mono-installs/desktop-linux-x86-release"
 export TERM=xterm
+export EDITOR_FLAGS=""
+
+if [ "${GPROF}" == "1" ]; then
+    export EDITOR_FLAGS="${EDITOR_FLAGS} CCFLAGS=-pg CFLAGS=-pg CXXFLAGS=-pg LINKFLAGS=-pg"
+fi
 
 rm -rf godot
 mkdir godot
@@ -60,7 +74,7 @@ if [ "${MONO}" == "1" ]; then
   export PATH="${GODOT_SDK_LINUX_X86_64}/bin:${BASE_PATH}"
   export OPTIONS_MONO_PREFIX="${OPTIONS} ${OPTIONS_MONO} mono_prefix=${MONO_PREFIX_X86_64}"
 
-  $SCONS platform=x11 $OPTIONS_MONO_PREFIX tools=yes target=release_debug copy_mono_root=yes
+  $SCONS platform=x11 $OPTIONS_MONO_PREFIX tools=yes target=release_debug copy_mono_root=yes $EDITOR_FLAGS
   mkdir -p /root/out/x64/tools-mono
   cp -rvp bin/* /root/out/x64/tools-mono
   rm -rf bin
