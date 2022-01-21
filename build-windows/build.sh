@@ -23,7 +23,7 @@ export PRODUCTION_TEMPLATE_FLAGS=""
 
 if [ "${BREAKPAD}" == "1" ]; then
   echo "Build has Breakpad enabled"
-  export PRODUCTION_TEMPLATE_FLAGS="${PRODUCTION_TEMPLATE_FLAGS} breakpad_enabled=true LINKFLAGS=-Wl,--build-id=md5 use_mingw=yes use_llvm=no use_thinlto=yes CCFLAGS=-g"
+  export PRODUCTION_TEMPLATE_FLAGS="${PRODUCTION_TEMPLATE_FLAGS} use_breakpad=true LINKFLAGS=-Wl,--build-id=md5 use_mingw=yes use_llvm=no use_thinlto=yes CCFLAGS=-g"
 fi
 
 rm -rf godot

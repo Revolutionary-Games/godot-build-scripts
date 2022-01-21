@@ -28,7 +28,7 @@ fi
 
 if [ "${BREAKPAD}" == "1" ]; then
   echo "Build has Breakpad enabled"
-  export PRODUCTION_TEMPLATE_FLAGS="${PRODUCTION_TEMPLATE_FLAGS} breakpad_enabled=true"
+  export PRODUCTION_TEMPLATE_FLAGS="${PRODUCTION_TEMPLATE_FLAGS} use_breakpad=true"
 fi
 
 rm -rf godot
